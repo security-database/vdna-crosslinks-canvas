@@ -5,6 +5,7 @@ Work-in progress conversion of [Security-Database vDNA Crosslinks SVG](https://g
 
 Actually, speed problem with Canvas on lot's of nodes.
 
+Original code have been simplified for test only with 2100 nodes.
 
 Security-Database vDNA Crosslinks
 ---------------------------------

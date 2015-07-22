@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>vDNA Crosslinks Canvas Work-in Progress</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+
+  <div class="result" id="result" style="border:1px solid #ccc; margin:10px; display: block; height: 700px; max-width: 100%; max-height:100%"></div>
+
+  <script>
+    var height = $("div.result").height();
+    var width = $("div.result").width();
+
+    var force = d3.layout.force();
+
+    var visCanvas = d3.select("div.result")
+      .append("canvas")
+      .attr("id", "canvas")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("viewBox", "0 0 " + width + " " + height)
+      .attr("preserveAspectRatio", "YMid meet");
+      
+    var context = visCanvas.node().getContext("2d")
+
+    var linkedByIndex = {};
+    var curLinksData = [];
+    var curNodesData = [];
+
+    d3.json("data.json", function(error, data) {
+      allData = setupData(data);
+
+      force.on("tick", forceTick);
+
+      curNodesData = allData.nodes;
+      curLinksData = allData.links;
+
+      force.charge(-200);
+      force.gravity(.6);
+      force.friction(.5);
+      force.size([width, height]);
+      force.nodes(curNodesData);
+      force.links(curLinksData);
+
+      force.start();
+
+    });
+
+    function paint() {
+      var hR = $(window).height();
+      var wR = $(window).width();
+
+      context.clearRect(0, 0, wR, hR);
+      var d;
+      var e;
+
+      // draw links
+      curLinksData.forEach(function(d) {
+        context.globalAlpha = 1;
+        context.lineWidth = 2;
+        context.strokeStyle = 'rgba(221, 221, 221, 0.8)';
+        context.beginPath(); 
+        context.moveTo(d.source.x, d.source.y);
+        context.lineTo(d.target.x, d.target.y);
+        context.stroke();
+        context.closePath();
+      });
+
+
+    curNodesData.forEach(function(d) {
+  
+      d.alpha = 1; 
+
+      context.beginPath();  
+      if (d.type == "Alert" && d.severity == "Critical") {  
+        context.fillStyle = "rgba(165,42,42,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Alert" && d.severity == "High") {      
+        context.fillStyle = "rgba(255,0,0,"+d.alpha+")";  
+        context.strokeStyle = "rgba(139,0,0,"+d.alpha+")";  
+      }
+      if (d.type == "Alert" && d.severity == "Low") {
+        context.fillStyle = "rgba(0,128,0,"+d.alpha+")";  
+        context.strokeStyle = "rgba(0,100,0,"+d.alpha+")";  
+      }
+      if (d.type == "Alert" && d.severity == "Medium") {    
+        context.fillStyle = "rgba(255,165,0,"+d.alpha+")"; 
+        context.strokeStyle = "rgba(210,105,30,"+d.alpha+")"; 
+      }
+      if (d.type == "Alert" && (d.severity == "NA" || d.severity == "")) {  
+        context.fillStyle = "rgba(128,128,128,"+d.alpha+")"; 
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Nessus") {   
+        context.fillStyle = "rgba(0,0,205,"+d.alpha+")"; 
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Snort") {
+        context.fillStyle = "rgba(176,196,222,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "OpenVas") {  
+        context.fillStyle = "rgba(123,104,238,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Metasploit") {   
+        context.fillStyle = "rgba(65,105,225,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      context.moveTo(d.x, d.y);
+      context.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);      
+      context.lineWidth = 3;
+      context.stroke();    
+      context.fill();
+      context.closePath();      
+    });
+  }
+
+
+  function setupData(data) {
+    var circleRadius, countExtent, nodesMap;
+    countExtent = d3.extent(data.nodes, function(d) {
+      return d.links;
+    });
+    circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
+
+    data.nodes.forEach(function(n) {
+      var randomnumber;
+      n.x = randomnumber = Math.floor(Math.random() * width);
+      n.y = randomnumber = Math.floor(Math.random() * height);
+      return n.radius = circleRadius(n.links);
+    });
+    nodesMap = mapNodes(data.nodes);
+    data.links.forEach(function(l) {
+      l.source = nodesMap.get(l.source);
+      l.target = nodesMap.get(l.target);
+      return linkedByIndex["" + l.source.id + "," + l.target.id] = 1;
+    });
+    return data;
+  };
+
+  function mapNodes(nodes) {
+    var nodesMap;
+    nodesMap = d3.map();
+    nodes.forEach(function(n) {
+      return nodesMap.set(n.id, n);
+    });
+    return nodesMap;
+  };
+
+  function forceTick(e) {
+
+    var q = d3.geom.quadtree(curNodesData),
+    i = 0,
+    d,
+    n = curNodesData.length;
+
+    for (i = 1; i < n; ++i) q.visit(collide(curNodesData[i]));
+
+    paint();
+    
+  };
+
+
+  function collide(node) {
+    var r = node.radius + 16,
+    nx1 = node.x - r,
+    nx2 = node.x + r,
+    ny1 = node.y - r,
+    ny2 = node.y + r;
+    return function(quad, x1, y1, x2, y2) {
+      if (quad.point && (quad.point !== node)) {
+        var x = node.x - quad.point.x,
+        y = node.y - quad.point.y,
+        l = Math.sqrt(x * x + y * y),
+        r = node.radius + quad.point.radius + 3;
+        if (l < r) {
+          l = (l - r) / l * .5;
+          node.x -= x *= l;
+          node.y -= y *= l;
+          quad.point.x += x;
+          quad.point.y += y;
+        }
+      }
+      return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+    };
+  };
+
+
+
+
+</script>
+
+
+</body>
+</html>
