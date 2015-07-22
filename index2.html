@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>vDNA Crosslinks Canvas Work-in Progress</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  
+  <script src="/opentip/opentip-jquery-excanvas.js"></script>
+  <link href="/opentip/opentip.css" rel="stylesheet" type="text/css" />
+  
+  <style>
+    .overlay {
+      fill: none;
+      pointer-events: all;
+    }
+  </style>
+</head>
+<body>
+  <div id="tooltip2" class="tooltip2"></div>
+  <div class="result" id="result" style="border:1px solid #ccc; margin:10px; display: block; height: 700px; max-width: 100%; max-height:100%"></div>
+
+  <script>
+
+    window.onresize = updateWindow;
+
+    var height = $("div.result").height();
+    var width = $("div.result").width();
+
+    var force = d3.layout.force();
+
+    var visCanvas = d3.select("div.result")
+      .append("canvas")
+      .attr("id", "canvas")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("viewBox", "0 0 " + width + " " + height)
+      .attr("preserveAspectRatio", "YMid meet");
+      
+    var context = visCanvas.node().getContext("2d")
+
+    var linkedByIndex = {};
+    var curLinksData = [];
+    var curNodesData = [];
+    var linkedNodes = [];
+    var showDetails;
+    var hideDetails;
+    var curNodesData;
+    var curLinksData;
+    var lastconsolelog = false;
+    var getFocus_stop = false;
+    var forcealpha;
+
+    Opentip.styles.crosstip = { 
+      borderColor: "lightgrey",
+      background: "white",
+      borderRadius: 0
+    }
+
+    Opentip.defaultStyle = "crosstip";
+    var myOpentip = new Opentip($("#tooltip2"), "", { style: "crosstip", showOn: "mouseover" });
+
+
+    d3.json("data.json", function(error, data) {
+      allData = setupData(data);
+
+      force.on("tick", forceTick);
+
+      curNodesData = filterNodes(allData.nodes);
+      curLinksData = filterLinks(allData.links, curNodesData);
+
+      force.charge(-200);
+      force.gravity(.6);
+      force.friction(.5);
+      force.size([width, height]);
+      force.nodes(curNodesData);
+      force.links(curLinksData);
+
+      force.start();
+
+
+    });
+
+    function updateWindow() {
+      
+      var canvas = document.getElementById("canvas");
+      var nheight = $("div.result").height();
+      var nwidth = $("div.result").width();
+
+      if (nheight != height || nwidth != width) {
+        var height = nheight;
+        var width = nwidth;
+
+        force.stop();
+
+        force.size([width, height]);
+        canvas.width = width;
+        canvas.height = height;
+        canvas.setAttribute("viewbox", "0 0 " + width + " " + height);  
+        context.clearRect(0, 0, width, height);
+
+        force.resume();
+      }
+    }
+
+    function getPosition(event) {
+      var x = event.x;
+      var y = event.y;
+      var circleid = "";
+
+      x -= visCanvas[0][0].offsetLeft;
+      y -= visCanvas[0][0].offsetTop;
+
+
+      circleid = selectNode(x, y);
+      if (circleid >= 0) {
+        window.location = 'canvas.html';
+      }
+
+    }
+
+    function drawlinkednodes(circleid) {
+      var a;
+      var b;
+      var linkedNodes = [];
+      var circlename = curNodesData[circleid].id;
+      var linked = 1;     
+      for ( i = 0; i < curLinksData.length; i++ ) {
+        if (curLinksData[i].source.id == circlename || curLinksData[i].target.id == circlename  ) {
+          linkedNodes[curLinksData[i].target.id] = curLinksData[i].target;
+          linkedNodes[curLinksData[i].source.id] = curLinksData[i].source;
+          linkedNodes[curNodesData[circleid].id] = curNodesData[circleid];
+        }
+      }
+      paint(linked, circlename, linkedNodes);
+      linkedNodes = [];
+      
+    }
+
+    function paint(linked, circlename, linkedNodes) {
+      var hR = $(window).height();
+      var wR = $(window).width();
+
+      context.clearRect(0, 0, wR, hR);
+      var d;
+      var e;
+
+    // draw links
+    curLinksData.forEach(function(d) {
+      if (linked == 1) {
+        if (circlename == d.source.id || circlename == d.target.id ) {
+          context.globalAlpha = 1;
+          context.lineWidth = 1.5;
+          context.strokeStyle = 'rgba(85, 85, 85, 0.5)';
+        } else {
+          context.globalAlpha = 1;
+          context.lineWidth = 1;
+          context.strokeStyle = 'rgba(221, 221, 221, 0.5)';
+        }
+      } else {
+        context.globalAlpha = 1;
+        context.lineWidth = 2;
+        context.strokeStyle = 'rgba(221, 221, 221, 0.8)';
+      }
+      context.beginPath(); 
+      context.moveTo(d.source.x, d.source.y);
+      context.lineTo(d.target.x, d.target.y);
+      context.stroke();
+      context.closePath();
+    });
+
+
+    curNodesData.forEach(function(d) {
+      if (linked == 1) {
+        if (linkedNodes[d.id] != undefined) {
+          d.alpha = 1;
+        } else {
+          d.alpha = 0.1;
+        }
+      } else if (linked == 0) {    
+        d.alpha = 1;  
+      }      
+
+
+      context.beginPath();  
+      if (d.type == "Alert" && d.severity == "Critical") {  
+        context.fillStyle = "rgba(165,42,42,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Alert" && d.severity == "High") {      
+        context.fillStyle = "rgba(255,0,0,"+d.alpha+")";  
+        context.strokeStyle = "rgba(139,0,0,"+d.alpha+")";  
+      }
+      if (d.type == "Alert" && d.severity == "Low") {
+        context.fillStyle = "rgba(0,128,0,"+d.alpha+")";  
+        context.strokeStyle = "rgba(0,100,0,"+d.alpha+")";  
+      }
+      if (d.type == "Alert" && d.severity == "Medium") {    
+        context.fillStyle = "rgba(255,165,0,"+d.alpha+")"; 
+        context.strokeStyle = "rgba(210,105,30,"+d.alpha+")"; 
+      }
+      if (d.type == "Alert" && (d.severity == "NA" || d.severity == "")) {  
+        context.fillStyle = "rgba(128,128,128,"+d.alpha+")"; 
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Nessus") {   
+        context.fillStyle = "rgba(0,0,205,"+d.alpha+")"; 
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Snort") {
+        context.fillStyle = "rgba(176,196,222,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "OpenVas") {  
+        context.fillStyle = "rgba(123,104,238,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      if (d.type == "Metasploit") {   
+        context.fillStyle = "rgba(65,105,225,"+d.alpha+")";
+        context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
+      }
+      context.moveTo(d.x, d.y);
+      context.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);      
+      context.lineWidth = 3;
+      context.stroke();    
+      context.fill();
+      context.closePath();      
+    });
+  }
+
+  function getFocus(mX, mY) {
+    var consolelog = false;
+    var content = "";
+    var circlename = "";
+    var linkedNodes = [];
+
+
+    var circleid = selectNode(mX, mY);
+
+    if (circleid >= 0) {
+      if (consolelog == false) {          
+
+        if (force.alpha() > 0) {
+          forcealpha = force.alpha();
+          force.stop();
+          getFocus_stop = true;
+        }
+
+        drawlinkednodes(circleid);
+
+        content = '<p class="main">' + curNodesData[circleid].id + ' (' + curNodesData[circleid].vendor + ')</p>';
+        if (curNodesData[circleid].type == "Alert") {
+          content += '<p class="main">Severity: ' + curNodesData[circleid].severity + '</p>';
+          content += '<p class="main">Published on: ' + curNodesData[circleid].published + '</p>';
+        }
+        content += '<p class="main">Links: ' + curNodesData[circleid].links + '</p>';
+
+        myOpentip.show();
+        myOpentip.setContent(content);
+
+        consolelog = true;
+        lastconsolelog = true;
+      }
+    }
+    else {
+      if (lastconsolelog == true && getFocus_stop == true) {
+        force.resume(forcealpha);
+        getFocus_stop = false;
+      }
+      consolelog = false;
+      lastconsolelog = false;
+      
+      myOpentip.setContent("");
+      myOpentip.hide();     
+      
+      paint(0, circlename, linkedNodes);
+    }
+    inside = false;
+    circleid = "";
+  }
+
+  visCanvas.on("mousemove", function() {
+    var m = d3.mouse(this);
+    getFocus( m[0], m[1] );
+
+  });
+
+  visCanvas.on("mousedown", function() {
+    getPosition(event);
+  });
+
+
+  function selectNode( mX, mY ){
+    var i = 0, nX, nY, nR;
+    var inside = false;
+    var circleid = "";
+
+    if (curNodesData != undefined && curNodesData.length > 0) {
+      for ( i; i < curNodesData.length; i++ ) {
+        nX = curNodesData[i].x,
+        nY = curNodesData[i].y,
+        nR = curNodesData[i].radius,
+
+        distance = Math.sqrt((mX-nX)*(mX-nX) + (mY-nY)*(mY-nY));
+
+        if ( distance < nR) {
+          inside = true;
+          circleid = i;
+        }
+
+      }
+
+      if (inside == true) {
+        return circleid;
+      } else {
+        return;
+      }
+    } 
+    return;
+  }
+
+  function setupData(data) {
+    var circleRadius, countExtent, nodesMap;
+    countExtent = d3.extent(data.nodes, function(d) {
+      return d.links;
+    });
+    circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
+
+    data.nodes.forEach(function(n) {
+      var randomnumber;
+      n.x = randomnumber = Math.floor(Math.random() * width);
+      n.y = randomnumber = Math.floor(Math.random() * height);
+      return n.radius = circleRadius(n.links);
+    });
+    nodesMap = mapNodes(data.nodes);
+    data.links.forEach(function(l) {
+      l.source = nodesMap.get(l.source);
+      l.target = nodesMap.get(l.target);
+      return linkedByIndex["" + l.source.id + "," + l.target.id] = 1;
+    });
+    return data;
+  };
+
+  function mapNodes(nodes) {
+    var nodesMap;
+    nodesMap = d3.map();
+    nodes.forEach(function(n) {
+      return nodesMap.set(n.id, n);
+    });
+    return nodesMap;
+  };
+
+  function forceTick(e) {
+    var linked = 0;
+    var linkedNodes = [];
+    var circlename = "";
+
+    var q = d3.geom.quadtree(curNodesData),
+    i = 0,
+    d,
+    n = curNodesData.length;
+
+    for (i = 1; i < n; ++i) q.visit(collide(curNodesData[i]));
+
+      paint(linked, circlename, linkedNodes);
+    
+  };
+
+  function filterNodes(allNodes) {
+    return allNodes;
+  };
+  function filterLinks(allLinks, curNodes) {
+    return allLinks;
+  };
+
+  function collide(node) {
+    var r = node.radius + 16,
+    nx1 = node.x - r,
+    nx2 = node.x + r,
+    ny1 = node.y - r,
+    ny2 = node.y + r;
+    return function(quad, x1, y1, x2, y2) {
+      if (quad.point && (quad.point !== node)) {
+        var x = node.x - quad.point.x,
+        y = node.y - quad.point.y,
+        l = Math.sqrt(x * x + y * y),
+        r = node.radius + quad.point.radius + 3;
+        if (l < r) {
+          l = (l - r) / l * .5;
+          node.x -= x *= l;
+          node.y -= y *= l;
+          quad.point.x += x;
+          quad.point.y += y;
+        }
+      }
+      return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+    };
+  };
+
+
+
+
+</script>
+
+
+</body>
+</html>
