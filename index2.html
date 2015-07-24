@@ -4,6 +4,7 @@
   <title>vDNA Crosslinks Canvas Work-in Progress</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.1/spin.min.js"></script>
   
   <script src="/opentip/opentip-jquery-excanvas.js"></script>
   <link href="/opentip/opentip.css" rel="stylesheet" type="text/css" />
@@ -13,13 +14,49 @@
       fill: none;
       pointer-events: all;
     }
+
+    #result {
+      position: relative;
+      border:1px solid #ccc; 
+      margin:10px; 
+      display: block; 
+      height: 700px; 
+      max-width: 100%; 
+      max-height:100%;
+    }    
   </style>
 </head>
 <body>
   <div id="tooltip2" class="tooltip2"></div>
-  <div class="result" id="result" style="border:1px solid #ccc; margin:10px; display: block; height: 700px; max-width: 100%; max-height:100%"></div>
+  <div id="result" class="result" ></div>
 
   <script>
+
+    var opts = {
+      lines: 13 // The number of lines to draw
+    , length: 7 // The length of each line
+    , width: 2 // The line thickness
+    , radius: 44 // The radius of the inner circle
+    , scale: 1 // Scales overall size of the spinner
+    , corners: 1 // Corner roundness (0..1)
+    , color: '#000' // #rgb or #rrggbb or array of colors
+    , opacity: 0.25 // Opacity of the lines
+    , rotate: 0 // The rotation offset
+    , direction: 1 // 1: clockwise, -1: counterclockwise
+    , speed: 1 // Rounds per second
+    , trail: 50 // Afterglow percentage
+    , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+    , zIndex: 2e9 // The z-index (defaults to 2000000000)
+    , className: 'spinner' // The CSS class to assign to the spinner
+    , top: '50%' // Top position relative to parent
+    , left: '50%' // Left position relative to parent
+    , shadow: false // Whether to render a shadow
+    , hwaccel: true // Whether to use hardware acceleration
+    , position: 'absolute' // Element positioning
+    }
+    var target = document.getElementById('result')
+    var spinner = new Spinner(opts).spin(target);
+    target.appendChild(spinner.el)
 
     window.onresize = updateWindow;
 
@@ -76,6 +113,8 @@
       force.links(curLinksData);
 
       force.start();
+      while (force.alpha() > 0.05) {force.tick(); }
+      spinner.stop();
 
 
     });
@@ -89,7 +128,7 @@
       if (nheight != height || nwidth != width) {
         var height = nheight;
         var width = nwidth;
-
+        alpha = force.alpha();
         force.stop();
 
         force.size([width, height]);
@@ -98,6 +137,7 @@
         canvas.setAttribute("viewbox", "0 0 " + width + " " + height);  
         context.clearRect(0, 0, width, height);
 
+        force.alpha(alpha);
         force.resume();
       }
     }
