@@ -176,13 +176,13 @@
       
     }
 
-    function paint(linked, circlename, linkedNodes) {
-      var hR = $(window).height();
-      var wR = $(window).width();
+  function paint(linked, circlename, linkedNodes) {
+    var hR = $(window).height();
+    var wR = $(window).width();
 
-      context.clearRect(0, 0, wR, hR);
-      var d;
-      var e;
+    context.clearRect(0, 0, wR, hR);
+    var d;
+    var e;
 
     // draw links
     curLinksData.forEach(function(d) {
@@ -300,8 +300,7 @@
         consolelog = true;
         lastconsolelog = true;
       }
-    }
-    else {
+    } else {
       if (lastconsolelog == true && getFocus_stop == true) {
         force.resume(forcealpha);
         getFocus_stop = false;
@@ -314,6 +313,7 @@
       
       paint(0, circlename, linkedNodes);
     }
+
     inside = false;
     circleid = "";
   }

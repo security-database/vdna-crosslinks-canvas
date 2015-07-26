@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>vDNA Crosslinks Canvas Work-in Progress with Grapher</title>
+    <meta charset="UTF-8">
+
+  </head>
+  <body>
+
+    <div id="result" class="result" ></div>
+
+
+    <style type="text/css">
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+      #result {
+        position: relative;
+        border:1px solid #ccc; 
+        margin:10px; 
+        display: block; 
+        height: 700px; 
+        max-width: 100%; 
+        max-height:100%;
+      }      
+    </style>
+    <script src="/grapher/grapher.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+
+      var width = $("div.result").width();
+      var height = $("div.result").height();
+      var linkedByIndex = {};
+      var force = d3.layout.force();
+
+      function setupData(data) {
+
+        var circleRadius, countExtent, nodesMap;
+        countExtent = d3.extent(data.nodes, function(d) {
+          return d.links;
+        });
+        circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
+
+        data.nodes.forEach(function(n) {
+          var randomnumber;
+          n.x = randomnumber = Math.floor(Math.random() * width);
+          n.y = randomnumber = Math.floor(Math.random() * height);
+          n.weight= 1;
+          n.r = circleRadius(n.links);
+          return n.radius = circleRadius(n.links);
+        });
+        nodesMap = mapNodes(data.nodes);
+        data.links.forEach(function(l) {
+          l.source = nodesMap.get(l.source);
+          l.target = nodesMap.get(l.target);
+          return linkedByIndex["" + l.source.id + "," + l.target.id] = 1;
+        });
+        return data;
+      };
+      function mapNodes(nodes) {
+        var nodesMap;
+        nodesMap = d3.map();
+        nodes.forEach(function(n) {
+          return nodesMap.set(n.id, n);
+        });
+        return nodesMap;
+      };      
+      // Helper function for offsets.
+      function getOffset (e) {
+        if (e.offsetX) return {x: e.offsetX, y: e.offsetY};
+        var rect = e.target.getBoundingClientRect();
+        var x = e.clientX - rect.left,
+            y = e.clientY - rect.top;
+        return {x: x, y: y};
+      };
+
+
+
+      // Variable to keep track of the node we're dragging and the current offset
+      var dragging = null,
+          offset = null;
+
+
+      // onTick gets called on each tick of D3's force
+      var onTick = function () {
+        var q = d3.geom.quadtree(network.nodes),
+        i = 0,
+        d,
+        n = network.nodes.length;
+
+        for (i = 1; i < n; ++i) q.visit(collide(network.nodes[i]));
+
+        if (dragging && offset) {
+          // update the node's position here so it's sticky
+          dragging.node.x = offset.x;
+          dragging.node.y = offset.y;
+        }
+        grapher.update(); // update the grapher
+      };
+
+        // Create a grapher instance (width, height, options)
+      var grapher = new Grapher();
+
+      d3.json("data.json", function(error, data) {
+        network = setupData(data);
+
+        var newlinks = [];
+        var sourcename = "";
+        var targetname = "";
+
+
+        for (i = 0; i < network.links.length; i++) {
+          sourcename = network.links[i].source;
+          targetname = network.links[i].target;
+
+          for (j = 0; j < network.nodes.length; j++) {
+
+            if (network.nodes[j].id == targetname.id) {
+              network.links[i].to = j;
+            }
+
+            if (network.nodes[j].id == sourcename.id) {
+              network.links[i].from = j;
+            }
+              
+          }
+        }
+
+
+        for (i = 0; i < network.nodes.length; i++) {
+          network.nodes[i].alpha = 1;
+
+          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Critical") {  
+            network.nodes[i].color = "rgba(165,42,42,"+network.nodes[i].alpha+")";
+          }
+          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "High") {      
+            network.nodes[i].color = "rgba(255,0,0,"+network.nodes[i].alpha+")";  
+          }
+          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Low") {
+            network.nodes[i].color = "rgba(0,128,0,"+network.nodes[i].alpha+")";  
+          }
+          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Medium") {    
+            network.nodes[i].color = "rgba(255,165,0,"+network.nodes[i].alpha+")"; 
+          }
+          if (network.nodes[i].type == "Alert" && (network.nodes[i].severity == "NA" || network.nodes[i].severity == "")) {  
+            network.nodes[i].color = "rgba(128,128,128,"+network.nodes[i].alpha+")"; 
+          }
+          if (network.nodes[i].type == "Nessus") {   
+            network.nodes[i].color = "rgba(0,0,205,"+network.nodes[i].alpha+")"; 
+          }
+          if (network.nodes[i].type == "Snort") {
+            network.nodes[i].color = "rgba(176,196,222,"+network.nodes[i].alpha+")";
+          }
+          if (network.nodes[i].type == "OpenVas") {  
+            network.nodes[i].color = "rgba(123,104,238,"+network.nodes[i].alpha+")";
+          }
+          if (network.nodes[i].type == "Metasploit") {   
+            network.nodes[i].color = "rgba(65,105,225,"+network.nodes[i].alpha+")";
+          }
+        }
+
+
+        for (i = 0; i < network.links.length; i++) {
+          network.links[i].color = "rgba(221, 221, 221, 0.5)";
+          network.links[i].lineWidth = 2;
+
+        }
+
+
+
+        force.on("tick", onTick);
+
+        
+        force.charge(-200);
+        force.gravity(.6);
+        force.friction(.5);
+        force.size([width, height]);
+        force.nodes(network.nodes);
+        force.links(network.links);
+
+        force.start();
+        //while (force.alpha() > 0.05) {force.tick(); }
+
+        grapher.data(network);
+
+
+        grapher.canvas.id = "canvas";
+        document.getElementById('result').appendChild(grapher.canvas);
+
+        grapher.play();
+      });
+
+      function collide(node) {
+        var r = node.radius + 16,
+        nx1 = node.x - r,
+        nx2 = node.x + r,
+        ny1 = node.y - r,
+        ny2 = node.y + r;
+        return function(quad, x1, y1, x2, y2) {
+          if (quad.point && (quad.point !== node)) {
+            var x = node.x - quad.point.x,
+            y = node.y - quad.point.y,
+            l = Math.sqrt(x * x + y * y),
+            r = node.radius + quad.point.radius + 3;
+            if (l < r) {
+              l = (l - r) / l * .5;
+              node.x -= x *= l;
+              node.y -= y *= l;
+              quad.point.x += x;
+              quad.point.y += y;
+            }
+          }
+          return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+        };
+      };
+
+      // We create a function that determines whether a click event falls on a node.
+      var getNodeIdAt = function (point) {
+        var node = -1,
+            x = point.x, y = point.y;
+
+        network.nodes.every(function (n, i) {
+          var inX = x <= n.x + n.r && x >= n.x - n.r,
+              inY = y <= n.y + n.r && y >= n.y - n.r,
+              found = inX && inY;
+          if (found) node = i;
+          return !found;
+        });
+
+        return node;
+      };
+      // On mousedown, grab the node that was clicked.
+      grapher.on('mousedown', function (e) {
+        var eOffset = getOffset(e);
+        var point = grapher.getDataPosition(eOffset);
+        var nodeId = getNodeIdAt(point);
+        if (nodeId > -1) {
+          dragging = {node: network.nodes[nodeId], id: nodeId};
+          offset = point;
+        }
+        else dragging = offset = null;
+      });
+
+
+      var startPoint;
+
+      function onMouseDown (e) {
+        // Set the starting point
+        startPoint = getOffset(e);
+
+        // Start listening to other mouse events.
+        grapher.on('mousemove', onMouseMove);
+        grapher.on('mouseup', onMouseUp);
+      };
+
+      function onMouseMove (e) {
+        // Adjust the translate based on the change in mouse location.
+        if (startPoint) {
+          var translate = grapher.translate(),
+              offset = getOffset(e);
+
+          translate[0] += (offset.x - startPoint.x);
+          translate[1] += (offset.y - startPoint.y);
+
+          startPoint = offset;
+          grapher.translate(translate);
+        }
+      };
+
+      function onMouseUp (e) {
+        // Stop listening to mouse events, and cleanup startPoint
+        startPoint = undefined;
+        grapher.off('mousemove');
+        grapher.off('mouseup');
+      };
+
+      grapher.on('mousedown', onMouseDown);
+
+
+
+
+      // Setup transforms with the mousewheel event
+      grapher.on('wheel', function (e) {
+        var offset = getOffset(e),
+            transform = grapher.transform(),
+            delta = e.deltaY / 5000,
+            fromCenterX = offset.x - width / 2;
+            fromCenterY = offset.y - height / 2;
+
+        transform.scale = transform.scale + delta;
+        transform.translate = [
+          transform.translate[0] + fromCenterX * delta,
+          transform.translate[1] + fromCenterY * delta,
+        ];
+
+        // Set the new transform
+        grapher.transform(transform);
+        // Render the graph
+        grapher.render();
+      });
+
+
+
+    </script>
+  </body>
+</html>
