@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>vDNA Crosslinks Canvas Work-in Progress</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+  <style type="text/css">
+    #result {
+      position: relative;
+      border:1px solid #ccc;
+      margin:10px;
+      display: block;
+      height: 700px;
+      max-width: 100%;
+      max-height:100%;
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <div id="result" class="result" ></div>
+
+  <script>
+    var height = $("div.result").height();
+    var width = $("div.result").width();
+
+    var force = d3.layout.force();
+
+    var visCanvas = d3.select("div.result")
+      .append("canvas")
+      .attr("id", "canvas")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("viewBox", "0 0 " + width + " " + height)
+      .attr("preserveAspectRatio", "YMid meet");
+
+    var context = visCanvas.node().getContext("2d")
+
+    var linkedByIndex = {};
+    var curLinksData = [];
+    var curNodesData = [];
+
+    d3.json("datasmall.json", function(error, data) {
+      allData = setupData(data);
+
+      force.on("tick", forceTick);
+
+      curNodesData = allData.nodes;
+      curLinksData = allData.links;
+
+      force.charge(-200);
+      force.gravity(.6);
+      force.friction(.5);
+      force.size([width, height]);
+      force.nodes(curNodesData);
+      force.links(curLinksData);
+
+      force.start();
+    });
+
+    function paint() {
+      var hR = $(window).height();
+      var wR = $(window).width();
+
+      context.clearRect(0, 0, wR, hR);
+      var d;
+      var e;
+
+      // draw links
+      curLinksData.forEach(function(d) {
+        context.beginPath();
+        context.moveTo(d.source.x, d.source.y);
+        context.lineTo(d.target.x, d.target.y);
+        context.stroke();
+        context.closePath();
+      });
+
+
+    curNodesData.forEach(function(d) {
+
+      d.alpha = 1;
+
+      context.beginPath();
+      context.moveTo(d.x, d.y);
+      context.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);
+      context.lineWidth = 3;
+      context.stroke();
+      context.fill();
+      context.closePath();
+    });
+  }
+
+
+  function setupData(data) {
+    var circleRadius, countExtent, nodesMap;
+    countExtent = d3.extent(data.nodes, function(d) {
+      return d.links;
+    });
+    circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
+
+    data.nodes.forEach(function(n) {
+      var randomnumber;
+      n.x = randomnumber = Math.floor(Math.random() * width);
+      n.y = randomnumber = Math.floor(Math.random() * height);
+      return n.radius = circleRadius(n.links);
+    });
+    nodesMap = mapNodes(data.nodes);
+    data.links.forEach(function(l) {
+      l.source = nodesMap.get(l.source);
+      l.target = nodesMap.get(l.target);
+      return linkedByIndex["" + l.source.id + "," + l.target.id] = 1;
+    });
+    return data;
+  };
+
+  function mapNodes(nodes) {
+    var nodesMap;
+    nodesMap = d3.map();
+    nodes.forEach(function(n) {
+      return nodesMap.set(n.id, n);
+    });
+    return nodesMap;
+  };
+
+  function forceTick(e) {
+    paint();
+  };
+
+
+
+</script>
+
+
+</body>
+</html>
