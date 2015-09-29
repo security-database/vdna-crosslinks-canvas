@@ -17,13 +17,13 @@
       }
       #result {
         position: relative;
-        border:1px solid #ccc; 
-        margin:10px; 
-        display: block; 
-        height: 700px; 
-        max-width: 100%; 
+        border:1px solid #ccc;
+        margin:10px;
+        display: block;
+        height: 700px;
+        max-width: 100%;
         max-height:100%;
-      }      
+      }
     </style>
     <script src="/grapher/grapher.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
@@ -66,7 +66,7 @@
           return nodesMap.set(n.id, n);
         });
         return nodesMap;
-      };      
+      };
       // Helper function for offsets.
       function getOffset (e) {
         if (e.offsetX) return {x: e.offsetX, y: e.offsetY};
@@ -124,7 +124,7 @@
             if (network.nodes[j].id == sourcename.id) {
               network.links[i].from = j;
             }
-              
+
           }
         }
 
@@ -132,31 +132,31 @@
         for (i = 0; i < network.nodes.length; i++) {
           network.nodes[i].alpha = 1;
 
-          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Critical") {  
+          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Critical") {
             network.nodes[i].color = "rgba(165,42,42,"+network.nodes[i].alpha+")";
           }
-          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "High") {      
-            network.nodes[i].color = "rgba(255,0,0,"+network.nodes[i].alpha+")";  
+          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "High") {
+            network.nodes[i].color = "rgba(255,0,0,"+network.nodes[i].alpha+")";
           }
           if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Low") {
-            network.nodes[i].color = "rgba(0,128,0,"+network.nodes[i].alpha+")";  
+            network.nodes[i].color = "rgba(0,128,0,"+network.nodes[i].alpha+")";
           }
-          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Medium") {    
-            network.nodes[i].color = "rgba(255,165,0,"+network.nodes[i].alpha+")"; 
+          if (network.nodes[i].type == "Alert" && network.nodes[i].severity == "Medium") {
+            network.nodes[i].color = "rgba(255,165,0,"+network.nodes[i].alpha+")";
           }
-          if (network.nodes[i].type == "Alert" && (network.nodes[i].severity == "NA" || network.nodes[i].severity == "")) {  
-            network.nodes[i].color = "rgba(128,128,128,"+network.nodes[i].alpha+")"; 
+          if (network.nodes[i].type == "Alert" && (network.nodes[i].severity == "NA" || network.nodes[i].severity == "")) {
+            network.nodes[i].color = "rgba(128,128,128,"+network.nodes[i].alpha+")";
           }
-          if (network.nodes[i].type == "Nessus") {   
-            network.nodes[i].color = "rgba(0,0,205,"+network.nodes[i].alpha+")"; 
+          if (network.nodes[i].type == "Nessus") {
+            network.nodes[i].color = "rgba(0,0,205,"+network.nodes[i].alpha+")";
           }
           if (network.nodes[i].type == "Snort") {
             network.nodes[i].color = "rgba(176,196,222,"+network.nodes[i].alpha+")";
           }
-          if (network.nodes[i].type == "OpenVas") {  
+          if (network.nodes[i].type == "OpenVas") {
             network.nodes[i].color = "rgba(123,104,238,"+network.nodes[i].alpha+")";
           }
-          if (network.nodes[i].type == "Metasploit") {   
+          if (network.nodes[i].type == "Metasploit") {
             network.nodes[i].color = "rgba(65,105,225,"+network.nodes[i].alpha+")";
           }
         }
@@ -172,7 +172,7 @@
 
         force.on("tick", onTick);
 
-        
+
         force.charge(-200);
         force.gravity(.6);
         force.friction(.5);
@@ -232,7 +232,7 @@
         return node;
       };
       // On mousedown, grab the node that was clicked.
-      grapher.on('mousedown', function (e) {
+      grapher.on('mousemove', function (e) {
         var eOffset = getOffset(e);
         var point = grapher.getDataPosition(eOffset);
         var nodeId = getNodeIdAt(point);
