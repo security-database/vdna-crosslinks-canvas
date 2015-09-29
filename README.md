@@ -17,7 +17,7 @@ Files
 - index.html exemple is a simple version with d3js force, nodes color and collide
 - index2.html exemple is a version with d3js force, waiting spin, pre calculation of the force, nodes color, collide, node hover with neighboring Repaint, Tooltips and windows resize
 - index3.html exemple is a simple version with d3js force, nodes color, collide, zoom in/out, drag and [Grapher library](https://github.com/ayasdi/grapher) -> Really Fast
-- **index4.html** exemple is a **complex version** with d3js force, nodes color, selector by severities - vendors - exploits, collide, hover show linked nodes, zoom in/out, pan and [Grapher library](https://github.com/ayasdi/grapher) -> *Again, Really Fast*
+- **index4.html** exemple is a **complex version** with d3js force, nodes color, selector by severities - vendors - exploits, collide, node hover with neighboring Repaint, Tooltips, zoom in/out, pan and [Grapher library](https://github.com/ayasdi/grapher) -> *Again, Really Fast*
 
 Todo
 ----
