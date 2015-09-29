@@ -8,11 +8,11 @@
   <style type="text/css">
     #result {
       position: relative;
-      border:1px solid #ccc; 
-      margin:10px; 
-      display: block; 
-      height: 700px; 
-      max-width: 100%; 
+      border:1px solid #ccc;
+      margin:10px;
+      display: block;
+      height: 700px;
+      max-width: 100%;
       max-height:100%;
     }
 
@@ -36,7 +36,7 @@
       .attr("height", height)
       .attr("viewBox", "0 0 " + width + " " + height)
       .attr("preserveAspectRatio", "YMid meet");
-      
+
     var context = visCanvas.node().getContext("2d")
 
     var linkedByIndex = {};
@@ -74,7 +74,7 @@
         context.globalAlpha = 1;
         context.lineWidth = 2;
         context.strokeStyle = 'rgba(221, 221, 221, 0.8)';
-        context.beginPath(); 
+        context.beginPath();
         context.moveTo(d.source.x, d.source.y);
         context.lineTo(d.target.x, d.target.y);
         context.stroke();
@@ -83,52 +83,52 @@
 
 
     curNodesData.forEach(function(d) {
-  
-      d.alpha = 1; 
 
-      context.beginPath();  
-      if (d.type == "Alert" && d.severity == "Critical") {  
+      d.alpha = 1;
+
+      context.beginPath();
+      if (d.type == "Alert" && d.severity == "Critical") {
         context.fillStyle = "rgba(165,42,42,"+d.alpha+")";
         context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
       }
-      if (d.type == "Alert" && d.severity == "High") {      
-        context.fillStyle = "rgba(255,0,0,"+d.alpha+")";  
-        context.strokeStyle = "rgba(139,0,0,"+d.alpha+")";  
+      if (d.type == "Alert" && d.severity == "High") {
+        context.fillStyle = "rgba(255,0,0,"+d.alpha+")";
+        context.strokeStyle = "rgba(139,0,0,"+d.alpha+")";
       }
       if (d.type == "Alert" && d.severity == "Low") {
-        context.fillStyle = "rgba(0,128,0,"+d.alpha+")";  
-        context.strokeStyle = "rgba(0,100,0,"+d.alpha+")";  
+        context.fillStyle = "rgba(0,128,0,"+d.alpha+")";
+        context.strokeStyle = "rgba(0,100,0,"+d.alpha+")";
       }
-      if (d.type == "Alert" && d.severity == "Medium") {    
-        context.fillStyle = "rgba(255,165,0,"+d.alpha+")"; 
-        context.strokeStyle = "rgba(210,105,30,"+d.alpha+")"; 
+      if (d.type == "Alert" && d.severity == "Medium") {
+        context.fillStyle = "rgba(255,165,0,"+d.alpha+")";
+        context.strokeStyle = "rgba(210,105,30,"+d.alpha+")";
       }
-      if (d.type == "Alert" && (d.severity == "NA" || d.severity == "")) {  
-        context.fillStyle = "rgba(128,128,128,"+d.alpha+")"; 
+      if (d.type == "Alert" && (d.severity == "NA" || d.severity == "")) {
+        context.fillStyle = "rgba(128,128,128,"+d.alpha+")";
         context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
       }
-      if (d.type == "Nessus") {   
-        context.fillStyle = "rgba(0,0,205,"+d.alpha+")"; 
+      if (d.type == "Nessus") {
+        context.fillStyle = "rgba(0,0,205,"+d.alpha+")";
         context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
       }
       if (d.type == "Snort") {
         context.fillStyle = "rgba(176,196,222,"+d.alpha+")";
         context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
       }
-      if (d.type == "OpenVas") {  
+      if (d.type == "OpenVas") {
         context.fillStyle = "rgba(123,104,238,"+d.alpha+")";
         context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
       }
-      if (d.type == "Metasploit") {   
+      if (d.type == "Metasploit") {
         context.fillStyle = "rgba(65,105,225,"+d.alpha+")";
         context.strokeStyle = "rgba(105,105,105,"+d.alpha+")";
       }
       context.moveTo(d.x, d.y);
-      context.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);      
+      context.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);
       context.lineWidth = 3;
-      context.stroke();    
+      context.stroke();
       context.fill();
-      context.closePath();      
+      context.closePath();
     });
   }
 
@@ -174,7 +174,7 @@
     for (i = 1; i < n; ++i) q.visit(collide(curNodesData[i]));
 
     paint();
-    
+
   };
 
 
