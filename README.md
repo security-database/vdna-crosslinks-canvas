@@ -1,6 +1,12 @@
 vDNA Crosslinks Canvas Work In Progress
 ====================
 
+Update
+---
+Work in progress done. You could see the result here : [Security-Database vDNA Crosslinks](https://github.com/security-database/vdna-crosslinks)
+
+Informations
+---
 Work-in progress conversion of [Security-Database vDNA Crosslinks SVG](https://github.com/security-database/vdna-crosslinks) for performence issue with SVG.
 
 Actually, speed problem with Canvas on lot's of nodes.

@@ -74,6 +74,7 @@
       // onTick gets called on each tick of D3's force
       var onTick = function () {
         grapher.update(); // update the grapher
+        grapher.render();
       };
 
       var grapher = new Grapher();
@@ -117,8 +118,6 @@
 
         grapher.canvas.id = "canvas";
         document.getElementById('result').appendChild(grapher.canvas);
-
-        grapher.play();
       });
 
     </script>

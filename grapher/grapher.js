@@ -95,7 +95,7 @@
 // Grapher.js may be freely distributed under the Apache 2.0 license
 
 ;(function () {
-  
+
 /**
   * Grapher
   * =======
@@ -124,15 +124,15 @@
   /**
     * grapher.initialize
     * ------------------
-    * 
+    *
     * Initialize is called when a grapher instance is created:
-    *     
+    *
     *     var grapher = new Grapher(width, height, options);
     *
     */
   Grapher.prototype.initialize = function (o) {
     if (!o) o = {};
-    
+
     // Extend default properties with options
     this.props = u.extend({
       color: 0xff222222,
@@ -186,7 +186,7 @@
   /**
     * grapher.set
     * ------------------
-    * 
+    *
     * General setter for a grapher's properties.
     *
     *     grapher.set(1, 'scale');
@@ -200,7 +200,7 @@
   /**
     * grapher.on
     * ------------------
-    * 
+    *
     * Add a listener to a grapher event. Only one listener can be bound to an
     * event at this time. Available events:
     *
@@ -218,7 +218,7 @@
   /**
     * grapher.off
     * ------------------
-    * 
+    *
     * Remove a listener from an event, or all listeners from an event if fn is not specified.
     */
   Grapher.prototype.off = function (event, fn) {
@@ -237,7 +237,7 @@
   /**
     * grapher.data
     * ------------------
-    * 
+    *
     * Accepts network data in the form:
     *
     *     {
@@ -259,7 +259,7 @@
   /**
     * grapher.enter
     * ------------------
-    * 
+    *
     * Creates node and link sprites to match the number of nodes and links in the
     * data.
     */
@@ -281,7 +281,7 @@
   /**
     * grapher.exit
     * ------------------
-    * 
+    *
     * Removes node and link sprites to match the number of nodes and links in the
     * data.
     */
@@ -302,8 +302,8 @@
   /**
     * grapher.update
     * ------------------
-    * 
-    * Add nodes and/or links to the update queue by index. Passing in no arguments will 
+    *
+    * Add nodes and/or links to the update queue by index. Passing in no arguments will
     * add all nodes and links to the update queue. Node and link sprites in the update
     * queue are updated at the time of rendering.
     *
@@ -330,7 +330,7 @@
   /**
     * grapher.updateNode
     * ------------------
-    * 
+    *
     * Add an individual node to the update queue. Optionally pass in a boolean to
     * specify whether or not to also add links connected with the node to the update queue.
     */
@@ -343,7 +343,7 @@
   /**
     * grapher.updateLink
     * ------------------
-    * 
+    *
     * Add an individual link to the update queue.
     */
   Grapher.prototype.updateLink = function (index) {
@@ -354,7 +354,7 @@
   /**
     * grapher.clear
     * ------------------
-    * 
+    *
     * Clears the canvas and grapher data.
     */
   Grapher.prototype.clear = function () {
@@ -366,7 +366,7 @@
   /**
     * grapher.render
     * ------------------
-    * 
+    *
     * Updates each sprite and renders the network.
     */
   Grapher.prototype.render = function () {
@@ -379,7 +379,7 @@
   /**
     * grapher.animate
     * ------------------
-    * 
+    *
     * Calls render in a requestAnimationFrame loop.
     */
   Grapher.prototype.animate = function (time) {
@@ -390,7 +390,7 @@
   /**
     * grapher.play
     * ------------------
-    * 
+    *
     * Starts the animate loop.
     */
   Grapher.prototype.play = function () {
@@ -401,7 +401,7 @@
   /**
     * grapher.pause
     * ------------------
-    * 
+    *
     * Pauses the animate loop.
     */
   Grapher.prototype.pause = function () {
@@ -413,7 +413,7 @@
   /**
     * grapher.resize
     * ------------------
-    * 
+    *
     * Resize the grapher view.
     */
   Grapher.prototype.resize = function (width, height) {
@@ -424,7 +424,7 @@
   /**
     * grapher.width
     * ------------------
-    * 
+    *
     * Specify or retrieve the width.
     */
   Grapher.prototype.width = function (width) {
@@ -436,7 +436,7 @@
    /**
     * grapher.height
     * ------------------
-    * 
+    *
     * Specify or retrieve the height.
     */
   Grapher.prototype.height = function (height) {
@@ -448,7 +448,7 @@
   /**
     * grapher.transform
     * ------------------
-    * 
+    *
     * Set the scale and translate as an object.
     * If no arguments are passed in, returns the current transform object.
     */
@@ -464,7 +464,7 @@
   /**
     * grapher.scale
     * ------------------
-    * 
+    *
     * Set the scale.
     * If no arguments are passed in, returns the current scale.
     */
@@ -478,7 +478,7 @@
   /**
     * grapher.translate
     * ------------------
-    * 
+    *
     * Set the translate.
     * If no arguments are passed in, returns the current translate.
     */
@@ -492,7 +492,7 @@
   /**
     * grapher.color
     * ------------------
-    * 
+    *
     * Set the default color of nodes and links.
     * If no arguments are passed in, returns the current default color.
     */
@@ -505,7 +505,7 @@
   /**
     * grapher.getDataPosition
     * ------------------
-    * 
+    *
     * Returns data space coordinates given display coordinates.
     * If a single argument passed in, function considers first argument an object with x and y props.
     */
@@ -520,7 +520,7 @@
   /**
   * grapher.getDisplayPosition
   * ------------------
-  * 
+  *
   * Returns display space coordinates given data coordinates.
   * If a single argument passed in, function considers first argument an object with x and y props.
   */
@@ -535,13 +535,13 @@
 /**
   * Private Functions
   * =================
-  * 
+  *
   */
 
   /**
     * grapher._addToUpdateQueue
     * -------------------
-    * 
+    *
     * Add indices to the nodes or links update queue.
     *
     */
@@ -562,7 +562,7 @@
   /**
     * grapher._clearUpdateQueue
     * -------------------
-    * 
+    *
     * Clear the update queue.
     *
     */
@@ -577,7 +577,7 @@
   /**
     * grapher._update
     * -------------------
-    * 
+    *
     * Update nodes and links in the update queue.
     *
     */
@@ -624,7 +624,7 @@
   /**
     * grapher._findLinks
     * -------------------
-    * 
+    *
     * Search for links connected to the node indices provided.
     *
     * isLinked is a helper function that returns true if a link is
@@ -656,7 +656,7 @@
   /**
     * grapher._findColor
     * -------------------
-    * 
+    *
     * Search for a color whether it's defined by palette index, string,
     * integer.
     */
@@ -671,7 +671,7 @@
   /**
     * grapher._getWebGL
     * -------------------
-    * 
+    *
     *get webGL context if available
     *
     */
@@ -685,7 +685,7 @@
  /**
     * grapher._onContextLost
     * ----------------------
-    * 
+    *
     * Handle context lost.
     *
     */
@@ -697,7 +697,7 @@
   /**
     * grapher._onContextRestored
     * --------------------------
-    * 
+    *
     * Handle context restored.
     *
     */
@@ -722,17 +722,17 @@
 }, {"./renderers/gl/renderer.js":2,"./renderers/canvas/renderer.js":3,"./helpers/color.js":4,"./helpers/link.js":5,"./helpers/node.js":6,"./helpers/shaders.js":7,"./helpers/utilities.js":8}],
 2: [function(require, module, exports) {
 ;(function () {
-  var LinkVertexShaderSource = require('./shaders/link.vert'),
-      LinkFragmentShaderSource = require('./shaders/link.frag'),
-      NodeVertexShaderSource = require('./shaders/node.vert'),
-      NodeFragmentShaderSource = require('./shaders/node.frag'),
+  var LinkVertexShaderSource = require('./shaders/link.vert.js'),
+      LinkFragmentShaderSource = require('./shaders/link.frag.js'),
+      NodeVertexShaderSource = require('./shaders/node.vert.js'),
+      NodeFragmentShaderSource = require('./shaders/node.frag.js'),
       Renderer = require('../renderer.js'),
       Color = require('../../helpers/color.js');
 
   var WebGLRenderer = Renderer.extend({
     init: function (o) {
       this.gl = o.webGL;
-      
+
       this.linkVertexShader = o.linkShaders && o.linkShaders.vertexCode || LinkVertexShaderSource;
       this.linkFragmentShader = o.linkShaders && o.linkShaders.fragmentCode || LinkFragmentShaderSource;
       this.nodeVertexShader = o.nodeShaders && o.nodeShaders.vertexCode ||  NodeVertexShaderSource;
@@ -876,14 +876,14 @@
 
       var positionLocation = this.gl.getAttribLocation(program, 'a_position');
       var rgbaLocation = this.gl.getAttribLocation(program, 'a_rgba');
-      
+
       this.gl.enableVertexAttribArray(positionLocation);
       this.gl.enableVertexAttribArray(rgbaLocation);
 
       this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, this.LINK_ATTRIBUTES  * Float32Array.BYTES_PER_ELEMENT, 0);
       this.gl.vertexAttribPointer(rgbaLocation, 4, this.gl.FLOAT, false, this.LINK_ATTRIBUTES  * Float32Array.BYTES_PER_ELEMENT, 8);
 
-      var lineWidthRange = this.gl.getParameter(this.gl.ALIASED_LINE_WIDTH_RANGE), // ex [1,10] 
+      var lineWidthRange = this.gl.getParameter(this.gl.ALIASED_LINE_WIDTH_RANGE), // ex [1,10]
           lineWidth = this.lineWidth * Math.abs(this.scale * this.resolution),
           lineWidthInRange = Math.min(Math.max(lineWidth, lineWidthRange[0]), lineWidthRange[1]);
 
@@ -908,7 +908,7 @@
       var rgbaLocation = this.gl.getAttribLocation(program, 'a_rgba');
       var centerLocation = this.gl.getAttribLocation(program, 'a_center');
       var radiusLocation = this.gl.getAttribLocation(program, 'a_radius');
-      
+
       this.gl.enableVertexAttribArray(positionLocation);
       this.gl.enableVertexAttribArray(rgbaLocation);
       this.gl.enableVertexAttribArray(centerLocation);
@@ -926,18 +926,74 @@
   if (module && module.exports) module.exports = WebGLRenderer;
 })();
 
-}, {"./shaders/link.vert":9,"./shaders/link.frag":10,"./shaders/node.vert":11,"./shaders/node.frag":12,"../renderer.js":13,"../../helpers/color.js":4}],
+}, {"./shaders/link.vert.js":9,"./shaders/link.frag.js":10,"./shaders/node.vert.js":11,"./shaders/node.frag.js":12,"../renderer.js":13,"../../helpers/color.js":4}],
 9: [function(require, module, exports) {
-module.exports = 'uniform vec2 u_resolution;\nattribute vec2 a_position;\nattribute vec4 a_rgba;\nvarying vec4 rgba;\nvoid main() {\n  vec2 clipspace = a_position / u_resolution * 2.0 - 1.0;\n  gl_Position = vec4(clipspace * vec2(1, -1), 0, 1);\n  rgba = a_rgba / 255.0;\n}';
+/*jshint multistr: true */
+module.exports = ' \
+  uniform vec2 u_resolution; \
+  attribute vec2 a_position; \
+  attribute vec4 a_rgba; \
+  varying vec4 rgba; \
+  void main() { \
+    vec2 clipspace = a_position / u_resolution * 2.0 - 1.0; \
+    gl_Position = vec4(clipspace * vec2(1, -1), 0, 1); \
+    rgba = a_rgba / 255.0; \
+  }';
 }, {}],
 10: [function(require, module, exports) {
-module.exports = 'precision mediump float;\nvarying vec4 rgba;\nvoid main() {\n  gl_FragColor = rgba;\n}\n';
+/*jshint multistr: true */
+module.exports = ' \
+  precision mediump float; \
+  varying vec4 rgba; \
+  void main() { \
+    gl_FragColor = rgba; \
+  }';
+
 }, {}],
 11: [function(require, module, exports) {
-module.exports = 'uniform vec2 u_resolution;\nattribute vec2 a_position;\nattribute vec4 a_rgba;\nattribute vec2 a_center;\nattribute float a_radius;\nvarying vec4 rgba;\nvarying vec2 center;\nvarying vec2 resolution;\nvarying float radius;\nvoid main() {\n  vec2 clipspace = a_position / u_resolution * 2.0 - 1.0;\n  gl_Position = vec4(clipspace * vec2(1, -1), 0, 1);\n  rgba = a_rgba / 255.0;\n  radius = a_radius;\n  center = a_center;\n  resolution = u_resolution;\n}\n';
+/*jshint multistr: true */
+module.exports = ' \
+  uniform vec2 u_resolution; \
+  attribute vec2 a_position; \
+  attribute vec4 a_rgba; \
+  attribute vec2 a_center; \
+  attribute float a_radius; \
+  varying vec4 rgba; \
+  varying vec2 center; \
+  varying vec2 resolution; \
+  varying float radius; \
+  void main() { \
+    vec2 clipspace = a_position / u_resolution * 2.0 - 1.0; \
+    gl_Position = vec4(clipspace * vec2(1, -1), 0, 1); \
+    rgba = a_rgba / 255.0; \
+    radius = a_radius; \
+    center = a_center; \
+    resolution = u_resolution; \
+  }';
 }, {}],
 12: [function(require, module, exports) {
-module.exports = 'precision mediump float;\nvarying vec4 rgba;\nvarying vec2 center;\nvarying vec2 resolution;\nvarying float radius;\nvoid main() {\n  vec4 color0 = vec4(0.0, 0.0, 0.0, 0.0);\n  float x = gl_FragCoord.x;\n  float y = resolution[1] - gl_FragCoord.y;\n  float dx = center[0] - x;\n  float dy = center[1] - y;\n  float distance = sqrt(dx * dx + dy * dy);\n  float diff = distance - radius;\n  if ( diff < 0.0 ) \n    gl_FragColor = rgba;\n  else if ( diff >= 0.0 && diff <= 1.0 )\n    gl_FragColor = vec4(rgba.r, rgba.g, rgba.b, rgba.a - diff);\n  else \n    gl_FragColor = color0;\n}\n';
+/*jshint multistr: true */
+module.exports = ' \
+  precision mediump float; \
+  varying vec4 rgba; \
+  varying vec2 center; \
+  varying vec2 resolution; \
+  varying float radius; \
+  void main() { \
+    vec4 color0 = vec4(0.0, 0.0, 0.0, 0.0); \
+    float x = gl_FragCoord.x; \
+    float y = resolution[1] - gl_FragCoord.y; \
+    float dx = center[0] - x; \
+    float dy = center[1] - y; \
+    float distance = sqrt(dx * dx + dy * dy); \
+    float diff = distance - radius; \
+    if ( diff < 0.0 ) \
+      gl_FragColor = rgba; \
+    else if ( diff >= 0.0 && diff <= 1.0 ) \
+      gl_FragColor = vec4(rgba.r, rgba.g, rgba.b, rgba.a - diff); \
+    else  \
+      gl_FragColor = color0; \
+  }';
 }, {}],
 13: [function(require, module, exports) {
 ;(function () {
@@ -991,16 +1047,16 @@ module.exports = 'precision mediump float;\nvarying vec4 rgba;\nvarying vec2 cen
         (function(name, fn){
           return function() {
             var tmp = this._super;
-           
+
             // Add a new ._super() method that is the same method
             // but on the super-class
             this._super = _super[name];
-           
+
             // The method only need to be bound temporarily, so we
             // remove it when we're done executing
             var ret = fn.apply(this, arguments);
             this._super = tmp;
-           
+
             return ret;
           };
         })(name, prop[name]) :
@@ -1013,16 +1069,16 @@ module.exports = 'precision mediump float;\nvarying vec4 rgba;\nvarying vec2 cen
       if ( !initializing && this.init )
         this.init.apply(this, arguments);
     }
-   
+
     // Populate our constructed prototype object
     Renderer.prototype = prototype;
-   
+
     // Enforce the constructor to be what we expect
     Renderer.prototype.constructor = Renderer;
- 
+
     // And make this class extendable
     Renderer.extend = arguments.callee;
-   
+
     return Renderer;
   };
 
@@ -1142,7 +1198,7 @@ function fromHexToInt (string) {
 
   var Renderer = require('../renderer.js');
   var Color = require('../../helpers/color.js');
-  
+
   var CanvasRenderer = Renderer.extend({
     init: function (o) {
       this._super(o);
@@ -1187,7 +1243,7 @@ function fromHexToInt (string) {
       }
     }
   });
-  
+
   if (module && module.exports) module.exports = CanvasRenderer;
 })();
 
